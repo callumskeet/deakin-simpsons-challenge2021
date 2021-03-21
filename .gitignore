@@ -1,0 +1,10 @@
+data
+models
+.ipynb_checkpoints
+.github
+logs
+deakin_ai_challenge_submission
+
+*.pdf
+*.png
+*.zip
