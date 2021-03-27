@@ -91,7 +91,7 @@ def train(
 
 def main():
     init_gpu()
-    wandb.init(project="deakin-simpsons", entity="cask", mode="offline")
+    wandb.init(project="deakin-simpsons", entity="cask", mode="online")
     if len(sys.argv) > 1:
         args = vars(parse_args())
         args = {k: v for k, v in args.items() if v is not None}
