@@ -78,7 +78,7 @@ class ModelCheckpoint_tweaked(tf.keras.callbacks.ModelCheckpoint):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--learning-rate")
+    parser.add_argument("--learning_rate")
     parser.add_argument("--dropout")
     parser.add_argument("--epochs")
     return parser.parse_args()
