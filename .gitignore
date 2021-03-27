@@ -4,6 +4,9 @@ models
 .github
 logs
 deakin_ai_challenge_submission
+wandb
+.vscode
+__pycache__
 
 *.pdf
 *.png
