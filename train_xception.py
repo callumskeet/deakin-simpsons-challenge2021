@@ -2,8 +2,8 @@ import sys
 from utils import *
 
 DATA_PARAMS = dict(
-    target_size=(64, 64),
-    batch_size=16,
+    target_size=(128, 128),
+    batch_size=64,
     directory="dataset/simpsons_train/",
     seed=1337,
     image_data_generator=ImageDataGenerator(validation_split=0.2),
