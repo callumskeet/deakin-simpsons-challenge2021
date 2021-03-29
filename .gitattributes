@@ -1,7 +1,12 @@
-* text eol=lf
+* text=auto
 
-*.h5 binary
-*.pdf binary
-*.png binary
-*.psd binary
-*.zip binary
+*.py text eol=lf
+*.sh text eol=lf
+*.yaml text eol=lf
+metadata text eol=lf
+
+*.h5 -text
+*.pdf -text
+*.png -text
+*.psd -text
+*.zip -text
