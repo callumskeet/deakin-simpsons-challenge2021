@@ -1,7 +1,7 @@
 import sys
 from utils import *
 
-DATA_PARAMS = dict(
+GLOBAL_PARAMS = dict(
     target_size=(128, 128),
     batch_size=64,
     directory="dataset/simpsons_train/",
@@ -9,13 +9,14 @@ DATA_PARAMS = dict(
     image_data_generator=ImageDataGenerator(validation_split=0.2),
     class_mode="categorical",
     interpolation="bicubic",
+    learning_rate=1e-4,
+    dropout=0.3,
+    epochs=1,
 )
 
-TRAIN_PARAMS = dict(learning_rate=1e-4, dropout=0.3, epochs=1)
 
-
-def make_xception(input_shape=(128, 128), dropout=0.3):
-    inputs = keras.Input(shape=input_shape + (3,))
+def make_xception(target_size=(128, 128), dropout=0.3):
+    inputs = keras.Input(shape=target_size + (3,))
 
     # Entry block
     x = layers.experimental.preprocessing.Rescaling(1.0 / 255)(inputs)
@@ -69,12 +70,12 @@ def train(
     val_ds,
     learning_rate=1e-4,
     epochs=1,
-    input_shape=(299, 299),
+    target_size=(299, 299),
     dropout=0.3,
     optimizer=tf.keras.optimizers.Adam,
     callbacks=None,
 ):
-    model = make_xception(input_shape=input_shape, dropout=dropout)
+    model = make_xception(target_size=target_size, dropout=dropout)
 
     model.compile(
         optimizer=optimizer(learning_rate=learning_rate),
@@ -95,19 +96,34 @@ def main():
     if len(sys.argv) > 1:
         args = vars(parse_args())
         args = {k: v for k, v in args.items() if v is not None}
-        TRAIN_PARAMS.update(args)
+        if args.get("target_size"):
+            args["target_size"] = (args["target_size"],) * 2
+        GLOBAL_PARAMS.update(args)
 
-    train_ds, val_ds, class_names, num_classes = create_datasets(DATA_PARAMS)
-    config = {
-        "input_shape": DATA_PARAMS["target_size"],
-        "learning_rate": TRAIN_PARAMS["learning_rate"],
-        "dropout": TRAIN_PARAMS["dropout"],
-        "epochs": TRAIN_PARAMS["epochs"],
-    }
-    wandb.config.update(config)
+    wandb.config.update(GLOBAL_PARAMS)
+
+    data_params = [
+        "target_size",
+        "batch_size",
+        "directory",
+        "seed",
+        "image_data_generator",
+        "class_mode",
+        "interpolation",
+    ]
+    data_params = {param: GLOBAL_PARAMS[param] for param in data_params}
+
+    train_ds, val_ds, class_names, num_classes = create_datasets(data_params)
+
+    hp = [
+        "learning_rate",
+        "dropout",
+        "epochs",
+    ]
+    hp = {param: GLOBAL_PARAMS[param] for param in hp}
 
     callbacks = [
-        keras.callbacks.EarlyStopping(monitor="val_accuracy", patience=5),
+        keras.callbacks.EarlyStopping(monitor="val_accuracy", patience=3),
         WandbCallback(
             monitor="val_accuracy",
             mode="max",
@@ -119,7 +135,7 @@ def main():
         ),
     ]
 
-    model, history = train(train_ds, val_ds, callbacks=callbacks, **config)
+    model, history = train(train_ds, val_ds, callbacks=callbacks, **hp)
 
     val_ds.reset()
     val_ds.shuffle = False

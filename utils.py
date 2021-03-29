@@ -81,6 +81,8 @@ def parse_args():
     parser.add_argument("--learning_rate", type=float)
     parser.add_argument("--dropout", type=float)
     parser.add_argument("--epochs", type=int)
+    parser.add_argument("--target_size", type=int)
+    parser.add_argument("--batch_size", type=int)
     return parser.parse_args()
 
 
