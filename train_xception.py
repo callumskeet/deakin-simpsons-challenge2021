@@ -15,11 +15,12 @@ GLOBAL_PARAMS = dict(
 )
 
 
-def make_xception(target_size=(128, 128), dropout=0.3):
+def make_xception(target_size=(299, 299), dropout=0.3):
     inputs = keras.Input(shape=target_size + (3,))
 
     # Entry block
     x = layers.experimental.preprocessing.Rescaling(1.0 / 255)(inputs)
+    x = layers.experimental.preprocessing.RandomContrast(0.3)(x)
     x = layers.experimental.preprocessing.RandomWidth(0.3)(x)
     x = layers.experimental.preprocessing.RandomHeight(0.3)(x)
     x = layers.experimental.preprocessing.RandomFlip("horizontal_and_vertical")(x)
