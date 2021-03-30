@@ -9,9 +9,6 @@ parameters:
   train_learning_rate:
     min: 0.0001
     max: 0.01
-  fine_tune_learning_rate:
-    min: 0.000001
-    max: 0.00001
   dropout:
     distribution: constant
     value: 0.2
