@@ -58,12 +58,11 @@ def resnet(target_size=64, dropout=0.5, **kwargs):
     x = model(x, training=False)
 
     # rebuild top
-    x = layers.AveragePooling2D(name="avg_pool", pool_size=(7, 7))(x)
-    x = Flatten(name="flatten")(x)
-    x = Dense(256, activation="relu")(x)
+    x = layers.GlobalAveragePooling2D(name="avg_pool")(x)
 
+    x = layers.Dense(256, activation="relu")(x)
     x = layers.Dropout(dropout, name="top_dropout")(x)
-    outputs = layers.Dense(20, activation="softmax", name="pred")(x)
+    outputs = layers.Dense(20, activation="softmax", name="predictions")(x)
 
     # compile
     model = keras.Model(inputs, outputs, name="ResNet")
