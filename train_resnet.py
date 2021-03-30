@@ -15,7 +15,8 @@ GLOBAL_PARAMS = dict(
     train_learning_rate=1e-3,
     fine_tune_learning_rate=1e-5,
     dropout=0.2,
-    epochs=1,
+    train_epochs=20,
+    fine_tune_epochs=10,
 )
 
 image_augmentation = models.Sequential(
@@ -178,3 +179,7 @@ def main():
             )
         }
     )
+
+
+if __name__ == "__main__":
+    main()
