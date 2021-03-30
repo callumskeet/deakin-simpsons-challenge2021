@@ -113,8 +113,6 @@ def main():
     if len(sys.argv) > 1:
         args = vars(parse_args())
         args = {k: v for k, v in args.items() if v is not None}
-        if args.get("target_size"):
-            args["target_size"] = (args["target_size"],) * 2
         GLOBAL_PARAMS.update(args)
 
     wandb.config.update(GLOBAL_PARAMS)

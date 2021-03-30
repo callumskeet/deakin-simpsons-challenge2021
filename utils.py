@@ -73,6 +73,7 @@ def init_gpu():
 def create_datasets(data_params):
     # Now, we create a training data iterator by creating batchs of images of the same size as
     # defined previously, i.e., each image is resized in a 64x64 pixels format.
+    data_params["target_size"] = (data_params["target_size"],) * 2
     train_ds = DirectoryIterator(
         **data_params,
         subset="training",
