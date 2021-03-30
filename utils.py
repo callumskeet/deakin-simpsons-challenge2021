@@ -83,7 +83,7 @@ def create_datasets(data_params):
     val_ds = DirectoryIterator(**data_params, subset="validation", shuffle=False)
 
     test_data_params = data_params.copy()
-    test_data_params.pop("image_data_generator")
+    test_data_params["image_data_generator"] = ImageDataGenerator()
     test_data_params["directory"] = "dataset/simpsons_test"
     test_ds = DirectoryIterator(**test_data_params)
 
