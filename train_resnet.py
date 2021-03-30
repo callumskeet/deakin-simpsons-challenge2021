@@ -45,13 +45,17 @@ def parse_args():
 
 
 def resnet(target_size=64, dropout=0.2, **kwargs):
-    inputs = layers.Input(shape=(target_size, target_size, 3))
-    x = image_augmentation(inputs)
-    x = keras.applications.resnet50.preprocess_input(x)
-    model = ResNet50(include_top=False, input_tensor=x, weights="imagenet")
+    model = ResNet50(
+        include_top=False, input_shape=(target_size, target_size, 3), weights="imagenet"
+    )
 
     # freeze pretrained weights
     model.trainable = False
+
+    inputs = layers.Input(shape=(target_size, target_size, 3))
+    x = image_augmentation(inputs)
+    x = keras.applications.resnet50.preprocess_input(x)
+    x = model(x, training=False)
 
     # rebuild top
     x = layers.GlobalAveragePooling2D(name="avg_pool")(model.output)
