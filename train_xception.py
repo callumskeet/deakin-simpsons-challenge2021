@@ -15,7 +15,17 @@ GLOBAL_PARAMS = dict(
 )
 
 
-def make_xception(target_size=(299, 299), dropout=0.3):
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--learning_rate", type=float)
+    parser.add_argument("--dropout", type=float)
+    parser.add_argument("--epochs", type=int)
+    parser.add_argument("--target_size", type=int)
+    parser.add_argument("--batch_size", type=int)
+    return parser.parse_args()
+
+
+def xception(target_size=(299, 299), dropout=0.3):
     inputs = keras.Input(shape=target_size + (3,))
 
     # Entry block
@@ -76,7 +86,7 @@ def train(
     optimizer=tf.keras.optimizers.Adam,
     callbacks=None,
 ):
-    model = make_xception(target_size=target_size, dropout=dropout)
+    model = xception(target_size=target_size, dropout=dropout)
 
     model.compile(
         optimizer=optimizer(learning_rate=learning_rate),
@@ -114,7 +124,7 @@ def main():
     ]
     data_params = {param: GLOBAL_PARAMS[param] for param in data_params}
 
-    train_ds, val_ds, class_names, num_classes = create_datasets(data_params)
+    train_ds, val_ds, test_ds, class_names, num_classes = create_datasets(data_params)
 
     hp = [
         "learning_rate",
@@ -138,12 +148,12 @@ def main():
 
     model, history = train(train_ds, val_ds, callbacks=callbacks, **hp)
 
-    val_ds.reset()
-    val_ds.shuffle = False
-    val_ds.next()
-    y_prob = model.predict(val_ds)
+    test_ds.reset()
+    test_ds.shuffle = False
+    test_ds.next()
+    y_prob = model.predict(test_ds)
     y_pred = y_prob.argmax(axis=-1)
-    y_true = val_ds.labels
+    y_true = test_ds.labels
 
     wandb.sklearn.plot_confusion_matrix(y_true, y_pred, class_names)
 

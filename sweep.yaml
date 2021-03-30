@@ -1,24 +1,32 @@
 program: train_xception.py
+entity: cask
 project: deakin-simpsons
 method: bayes
 metric:
   name: val_accuracy
   goal: maximize
 parameters:
-  learning_rate:
-    min: 0.00001
-    max: 0.001
+  train_learning_rate:
+    min: 0.0001
+    max: 0.01
+  fine_tune_learning_rate:
+    min: 0.000001
+    max: 0.00001
   dropout:
     min: 0.4
     max: 0.6
-  epochs:
+  train_epochs:
     distribution: constant
-    value: 15
+    value: 20
+  fine_tune_epochs:
+    distribution: constant
+    value: 10
   target_size:
     distribution: constant
-    value: 299
+    value: 64
   batch_size:
     distribution: categorical
     values:
       - 16
       - 32
+      - 64

@@ -2,7 +2,6 @@ import os
 import itertools
 import collections
 import datetime
-import argparse
 from pathlib import Path
 
 import numpy as np
@@ -27,25 +26,6 @@ from tensorflow.keras import models, layers, optimizers
 from tensorflow.python.keras.saving import hdf5_format
 from keras.preprocessing.image import ImageDataGenerator, DirectoryIterator
 from tensorboard.plugins.hparams import api as hp
-
-
-DataParams = collections.namedtuple(
-    "DataParams",
-    [
-        "target_size",
-        "batch_size",
-        "directory",
-        "seed",
-        "image_data_generator",
-        "class_mode",
-        "interpolation",
-        "class_names",
-    ],
-)
-
-HyperParams = collections.namedtuple(
-    "HyperParams", ["learning_rate", "dropout", "epochs"]
-)
 
 
 class ModelCheckpoint_tweaked(tf.keras.callbacks.ModelCheckpoint):
@@ -76,16 +56,6 @@ class ModelCheckpoint_tweaked(tf.keras.callbacks.ModelCheckpoint):
         )
 
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--learning_rate", type=float)
-    parser.add_argument("--dropout", type=float)
-    parser.add_argument("--epochs", type=int)
-    parser.add_argument("--target_size", type=int)
-    parser.add_argument("--batch_size", type=int)
-    return parser.parse_args()
-
-
 def init_gpu():
     gpus = tf.config.list_physical_devices("GPU")
     if gpus:
@@ -112,13 +82,18 @@ def create_datasets(data_params):
     # defined previously, i.e., each image is resized in a 64x64 pixels format.
     val_ds = DirectoryIterator(**data_params, subset="validation", shuffle=False)
 
+    test_data_params = data_params.copy()
+    test_data_params.pop("image_data_generator")
+    test_data_params["directory"] = "dataset/simpsons_test"
+    test_ds = DirectoryIterator(**test_data_params)
+
     # We save the list of classes (labels).
     class_names = list(train_ds.class_indices.keys())
 
     # We also save the number of labels.
     num_classes = train_ds.num_classes
 
-    return train_ds, val_ds, class_names, num_classes
+    return train_ds, val_ds, test_ds, class_names, num_classes
 
 
 def plot_class_distribution(train_ds, class_names):
