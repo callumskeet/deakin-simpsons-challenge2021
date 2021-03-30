@@ -14,7 +14,7 @@ GLOBAL_PARAMS = dict(
     interpolation="bicubic",
     train_learning_rate=1e-3,
     fine_tune_learning_rate=1e-5,
-    dropout=0.2,
+    dropout=0.5,
     train_epochs=20,
     fine_tune_epochs=10,
 )
@@ -44,7 +44,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def resnet(target_size=64, dropout=0.2, **kwargs):
+def resnet(target_size=64, dropout=0.5, **kwargs):
     model = ResNet50(
         include_top=False, input_shape=(target_size, target_size, 3), weights="imagenet"
     )
@@ -58,8 +58,9 @@ def resnet(target_size=64, dropout=0.2, **kwargs):
     x = model(x, training=False)
 
     # rebuild top
-    x = layers.GlobalAveragePooling2D(name="avg_pool")(x)
-    x = layers.BatchNormalization()(x)
+    x = layers.AveragePooling2D(name="avg_pool", pool_size=(7, 7))(x)
+    x = Flatten(name="flatten")(x)
+    x = Dense(256, activation="relu")(x)
 
     x = layers.Dropout(dropout, name="top_dropout")(x)
     outputs = layers.Dense(20, activation="softmax", name="pred")(x)
@@ -177,7 +178,7 @@ def main():
         {
             "classification_report": classification_report(
                 y_true, y_pred, target_names=class_names, output_dict=True
-            )
+            ),
         }
     )
 
