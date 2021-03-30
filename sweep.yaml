@@ -1,4 +1,4 @@
-program: train_xception.py
+program: train_resnet.py
 entity: cask
 project: deakin-simpsons
 method: bayes
