@@ -58,7 +58,7 @@ def resnet(target_size=64, dropout=0.2, **kwargs):
     x = model(x, training=False)
 
     # rebuild top
-    x = layers.GlobalAveragePooling2D(name="avg_pool")(model.output)
+    x = layers.GlobalAveragePooling2D(name="avg_pool")(x)
     x = layers.BatchNormalization()(x)
 
     x = layers.Dropout(dropout, name="top_dropout")(x)
