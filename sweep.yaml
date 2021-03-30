@@ -13,8 +13,8 @@ parameters:
     min: 0.000001
     max: 0.00001
   dropout:
-    min: 0.4
-    max: 0.6
+    distribution: constant
+    value: 0.2
   train_epochs:
     distribution: constant
     value: 20

@@ -44,7 +44,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def resnet(target_size=64, dropout=0.2):
+def resnet(target_size=64, dropout=0.2, **kwargs):
     inputs = layers.Input(shape=(target_size, target_size, 3))
     x = image_augmentation(inputs)
     x = keras.applications.resnet50.preprocess_input(x)
@@ -57,7 +57,6 @@ def resnet(target_size=64, dropout=0.2):
     x = layers.GlobalAveragePooling2D(name="avg_pool")(model.output)
     x = layers.BatchNormalization()(x)
 
-    top_dropout_weight = 0.2
     x = layers.Dropout(dropout, name="top_dropout")(x)
     outputs = layers.Dense(20, activation="softmax", name="pred")(x)
 
