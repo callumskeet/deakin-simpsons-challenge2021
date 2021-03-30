@@ -65,27 +65,34 @@ def resnet(target_size=64, dropout=0.2):
     return model
 
 
-def train(train_ds, val_ds, callbacks, epochs, learning_rate, **kwargs):
+def train(train_ds, val_ds, callbacks, train_epochs, train_learning_rate, **kwargs):
     model = resnet(**kwargs)
 
     model.compile(
-        optimizer=keras.optimizers.Adam(learning_rate=learning_rate),
+        optimizer=keras.optimizers.Adam(learning_rate=train_learning_rate),
         loss="categorical_crossentropy",
         metrics="accuracy",
     )
 
     history = model.fit(
-        train_ds, validation_data=val_ds, epochs=epochs, callbacks=callbacks
+        train_ds, validation_data=val_ds, epochs=train_epochs, callbacks=callbacks
     )
 
     return model, history
 
 
-def fine_tune(model: keras.Model, train_ds, val_ds, learning_rate, epochs, callbacks):
+def fine_tune(
+    model: keras.Model,
+    train_ds,
+    val_ds,
+    fine_tune_learning_rate,
+    fine_tune_epochs,
+    callbacks,
+):
     model.trainable = True
 
     model.compile(
-        optimizer=keras.optimizers.Adam(learning_rate=learning_rate),
+        optimizer=keras.optimizers.Adam(learning_rate=fine_tune_learning_rate),
         loss="categorical_crossentropy",
         metrics="accuracy",
     )
@@ -93,7 +100,7 @@ def fine_tune(model: keras.Model, train_ds, val_ds, learning_rate, epochs, callb
     history = model.fit(
         train_ds,
         validation_data=val_ds,
-        epochs=epochs,
+        epochs=fine_tune_epochs,
         callbacks=callbacks,
     )
 
@@ -127,9 +134,11 @@ def main():
 
     hp = [
         "target_size",
-        "learning_rate",
+        "train_learning_rate",
+        "fine_tune_learning_rate",
         "dropout",
-        "epochs",
+        "train_epochs",
+        "fine_tune_epochs",
     ]
     hp = {param: GLOBAL_PARAMS[param] for param in hp}
 
