@@ -61,7 +61,7 @@ def resnet(target_size=64, dropout=0.2, **kwargs):
     outputs = layers.Dense(20, activation="softmax", name="pred")(x)
 
     # compile
-    modle = keras.Model(inputs, outputs, name="ResNet")
+    model = keras.Model(inputs, outputs, name="ResNet")
     return model
 
 
